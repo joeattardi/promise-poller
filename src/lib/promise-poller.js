@@ -3,30 +3,39 @@ import debugModule from 'debug';
 
 const debug = debugModule('promisePoller');
 
+const DEFAULTS = {
+  interval: 1000,
+  retries: 5,
+  name: 'Poller'
+};
 
-export default function promisePoller(interval, retries, taskFn, progressCallback) {
-  debug(`Creating a promise poller with interval=${interval}, retries=${retries}`);
+export default function promisePoller(options = {}) {
+  Object.keys(DEFAULTS).forEach(option => options[option] = options[option] || DEFAULTS[option]);
+  debug(`Creating a promise poller with interval=${options.interval}, retries=${options.retries}`);
+
+  if (typeof options.taskFn !== 'function') {
+    throw new Error('No taskFn function specified in options');
+  }
 
   return new Promise(function(resolve, reject) {
-    let retriesRemaining = retries;
-
+    let retriesRemaining = options.retries;
     function poll() {
-      let task = taskFn();
+      let task = options.taskFn();
       task.then(function(result) {
-        debug(`Poll succeeded. Resolving master promise.`);
+        debug(`(${options.name}) Poll succeeded. Resolving master promise.`);
         resolve(result);
       }, function(err) {
-        if (typeof progressCallback === 'function') {
-          progressCallback(err);
+        if (typeof options.progressCallback === 'function') {
+          options.progressCallback({ retriesRemaining: retriesRemaining, error: err});
         }
 
         if (!--retriesRemaining) {
-          debug('Maximum retries reached. Rejecting master promise.');
+          debug(`(${options.name}) Maximum retries reached. Rejecting master promise.`);
           reject(err);
         } else {
-          debug(`Poll failed. ${retriesRemaining} retries remaining.`);
-          debug(`Waiting ${interval}ms to try again.`);
-          Promise.delay(interval).then(poll);
+          debug(`(${options.name}) Poll failed. ${retriesRemaining} retries remaining.`);
+          debug(`(${options.name}) Waiting ${options.interval}ms to try again.`);
+          Promise.delay(options.interval).then(poll);
         }
       });
     }
