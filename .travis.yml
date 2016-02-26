@@ -1,4 +1,8 @@
 language: node_js
+before_script:
+  - npm install -g babel-cli
+  - npm install -g jasmine
+  - npm install -g eslint
 node_js:
   - "4.1"
   - "4.0"
