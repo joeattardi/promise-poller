@@ -1,5 +1,6 @@
 # promise-poller
-![](https://travis-ci.org/joeattardi/promise-poller.svg?branch=master)
+[![](https://travis-ci.org/joeattardi/promise-poller.svg?branch=master)](https://travis-ci.org/joeattardi/promise-poller)
+[![npm version](https://badge.fury.io/js/promise-poller.svg)](https://www.npmjs.com/package/promise-poller)
 
 A basic poller built on top of promises. You can use any promise library that is Promises/A+ compliant.
 
@@ -66,6 +67,10 @@ If you have more than one poller active at a time, and you need to differentiate
 When this poller prints debug messages, the poller name will be included:
 
     promisePoller (App Server Poller) Poll failed. 1 retries remaining. +504ms
+
+# Contributors
+* Joe Attardi
+* /u/jcready
 
 # License
 The MIT License (MIT)
