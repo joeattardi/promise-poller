@@ -2,8 +2,9 @@
   "name": "promise-poller",
   "version": "1.0.0",
   "description": "A basic poller built on top of promises",
-  "main": "dist/promise-poller.js",
+  "main": "dist/lib/promise-poller.js",
   "scripts": {
+    "prepublish": "npm run compile",
     "compile": "babel -d dist src",
     "clean": "rm -rf dist",
     "lint": "eslint src",
