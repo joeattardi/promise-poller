@@ -9,7 +9,7 @@ const DEFAULTS = {
   name: 'Poller'
 };
 
-export default function promisePoller(options = {}) {
+function promisePoller(options = {}) {
   Object.keys(DEFAULTS).forEach(option => options[option] = options[option] || DEFAULTS[option]);
   debug(`Creating a promise poller with interval=${options.interval}, retries=${options.retries}`);
 
@@ -43,3 +43,4 @@ export default function promisePoller(options = {}) {
   });
 }
 
+module.exports = promisePoller;
