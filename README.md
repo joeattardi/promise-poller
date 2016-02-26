@@ -1,4 +1,6 @@
 # promise-poller
+![](https://travis-ci.org/joeattardi/promise-poller.svg?branch=master)
+
 A basic poller built on top of promises. You can use any promise library that is Promises/A+ compliant.
 
 Sometimes, you may perform asynchronous operations that may fail. In many of those cases, you want to retry these operations one or more times before giving up. `promise-poller` handles this elegantly using promises.
