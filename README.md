@@ -5,7 +5,7 @@ Sometimes, you may perform asynchronous operations that may fail. In many of tho
 
 # Usage
 ## Basic usage
-The core of `promise-poller` is a *task function*. This is simply a function that starts your asynchronous task and returns a promise. To start polling, pass your task function to the `promisePoller` function:
+The core of `promise-poller` is a *task function*. This is simply a function that starts your asynchronous task and returns a promise. If the task function does not return a promise, it will be wrapped in a promise. To start polling, pass your task function to the `promisePoller` function:
 
     var promisePoller = require('promise-poller');
 
