@@ -109,14 +109,19 @@ describe('Promise Poller', function() {
   });
 
   it('calls the progress callback with each failure', function(done) {
-    let callback = jasmine.createSpy();
+    let count = 0;
+    let callback = function(retriesRemaining, error) {
+      expect(error).toEqual('derp');
+      expect(retriesRemaining).toEqual(3 - count);
+      count++;
+    };
     promisePoller({
       taskFn: () => Promise.reject('derp'),
       interval: 500,
       retries: 3,
       progressCallback: callback
     }).then(null, () => {
-      expect(callback.calls.count()).toBe(3);
+      expect(count).toEqual(3);
       done();
     });
   });

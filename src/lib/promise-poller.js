@@ -26,7 +26,7 @@ export default function promisePoller(options = {}) {
         resolve(result);
       }, function(err) {
         if (typeof options.progressCallback === 'function') {
-          options.progressCallback({ retriesRemaining: retriesRemaining, error: err});
+          options.progressCallback(retriesRemaining, err);
         }
 
         if (!--retriesRemaining) {
