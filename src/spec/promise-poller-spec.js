@@ -136,4 +136,15 @@ describe('Promise Poller', function() {
       done();
     });
   });
+
+  it('fails the poll if an exception is thrown in the task function', function(done) {
+    promisePoller({
+      taskFn: () => { throw new Error('oops'); },
+      interval: 500,
+      retries: 3
+    }).then(null, err => {
+      expect(err.message).toBe('oops');
+      done();
+    });
+  });
 });
