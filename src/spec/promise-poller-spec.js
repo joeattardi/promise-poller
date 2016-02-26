@@ -125,4 +125,15 @@ describe('Promise Poller', function() {
       done();
     });
   });
+
+  it('wraps a non-promise task function return in Promise.resolve', function(done) {
+    promisePoller({
+      taskFn: () => 'foobar',
+      interval: 500,
+      retries: 3
+    }).then(val => {
+      expect(val).toEqual('foobar');
+      done();
+    });
+  });
 });

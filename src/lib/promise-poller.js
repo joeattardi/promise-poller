@@ -20,8 +20,7 @@ export default function promisePoller(options = {}) {
   return new Promise(function(resolve, reject) {
     let retriesRemaining = options.retries;
     function poll() {
-      let task = options.taskFn();
-      task.then(function(result) {
+      Promise.resolve(options.taskFn()).then(function(result) {
         debug(`(${options.name}) Poll succeeded. Resolving master promise.`);
         resolve(result);
       }, function(err) {
