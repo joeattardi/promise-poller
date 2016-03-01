@@ -1,6 +1,7 @@
 # promise-poller
 [![](https://travis-ci.org/joeattardi/promise-poller.svg?branch=master)](https://travis-ci.org/joeattardi/promise-poller)
-[![npm version](https://badge.fury.io/js/promise-poller.svg)](https://www.npmjs.com/package/promise-poller)
+[![](https://badge.fury.io/js/promise-poller.svg)](https://www.npmjs.com/package/promise-poller)
+[![](https://david-dm.org/joeattardi/promise-poller.svg)](https://david-dm.org/joeattardi/promise-poller)
 
 A basic poller built on top of promises. You can use any promise library that is Promises/A+ compliant.
 
