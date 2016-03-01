@@ -5,13 +5,15 @@ const debug = debugModule('promisePoller');
 
 const DEFAULTS = {
   interval: 1000,
-  retries: 5,
-  name: 'Poller'
+  retries: 5
 };
+
+let pollerCount = 0;
 
 function promisePoller(options = {}) {
   Object.keys(DEFAULTS).forEach(option => options[option] = options[option] || DEFAULTS[option]);
-  debug(`Creating a promise poller with interval=${options.interval}, retries=${options.retries}`);
+  options.name = options.name || `Poller-${pollerCount++}`;
+  debug(`Creating a promise poller "${options.name}" with interval=${options.interval}, retries=${options.retries}`);
 
   if (typeof options.taskFn !== 'function') {
     throw new Error('No taskFn function specified in options');
