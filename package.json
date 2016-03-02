@@ -19,7 +19,9 @@
     "promises",
     "poller",
     "polling",
-    "poll"
+    "poll",
+    "timeout",
+    "ajax"
   ],
   "author": "Joe Attardi <joe@attardi.net> (http://www.thinksincode.com/)",
   "license": "MIT",
