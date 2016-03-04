@@ -54,7 +54,7 @@ You can also specify a progress callback function. Each time the task fails, the
 ## Debugging
 `promise-poller` uses the [debug](https://www.npmjs.com/package/debug) library. The debug name is `promisePoller`. To run your program with debug output for the `promise-poller`, set the `DEBUG` environment variable accordingly:
 
-`% DEBUG=progressPoller node path/to/app.js`
+`% DEBUG=promisePoller node path/to/app.js`
 
 If you have more than one poller active at a time, and you need to differentiate between them in debug output, you can give the `promisePoller` options a `name` property:
 
