@@ -29,13 +29,39 @@ The master promise will be resolved with the value that your task promise is res
 `promise-poller` will attempt your task by calling the function and waiting on the returned promise. If the promise is rejected, `promise-poller` will wait one second and try again. It will attempt to execute your task 3 times before rejecting the master promise.
 
 ## Specify polling options
-You can specify a different polling interal or number of retries:
+You can specify a different polling interval or number of retries:
 
     var poller = promisePoller({
       taskFn: myTask,
       interval: 500, // milliseconds
       retries: 5
     });
+
+## Select polling strategy
+By default, `promise-poller` will use a fixed interval between each poll attempt. For example, with an `interval` option of 500, the poller will poll approximately every 500 milliseconds. This is the `fixed-interval` strategy. There are two other strategies available that may better suit your use case. To select a polling strategy, specify the `strategy` option, e.g.:
+
+    promisePoller({
+      taskFn: myTask,
+      strategy: 'linear-backoff'
+    });
+
+### Linear backoff (`linear-backoff`)
+Options:
+
+* `start` - The starting value to use for the polling interval (default = 1000)
+* `increment` - The amount to increase the interval by on each poll attempt.
+
+Linear backoff will increase the interval linearly by some constant amount for each poll attempt. For example, using the default options, the first retry will wait 1000 milliseconds. Each successive retry will wait an additional 1000 milliseconds: 1000, 2000, 3000, 4000, etc.
+
+### Exponential backoff with jitter (`exponential-backoff`)
+Options:
+
+* `min` - The minimum interval amount to use (default = 1000)
+* `max` - The maximum interval amount to use (default = 30000)
+
+Exponential backoff increases the poll interval by a power of two for each poll attempt. `promise-poller` uses exponential backoff with jitter. Jitter takes a random value between `min` and 2^*n* on the *n*th polling interval, not to exceed `max`. 
+
+For more information about exponential backoff with jitter, and its advantages, see [https://www.awsarchitectureblog.com/2015/03/backoff.html](https://www.awsarchitectureblog.com/2015/03/backoff.html).
 
 ## Progress notification
 You can also specify a progress callback function. Each time the task fails, the progress callback will be called with the number of retries remaining and the error that occurred (the value that the task promise was rejected with):
