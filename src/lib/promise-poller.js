@@ -1,39 +1,8 @@
 import Promise from 'bluebird';
 import debugModule from 'debug';
+import strategies from './strategies';
 
 const debug = debugModule('promisePoller');
-
-const strategies = {
-  'fixed-interval': {
-    defaults: {
-      interval: 1000
-    },
-    getNextInterval: function(count, options) {
-      return options.interval;
-    }
-  },
-
-  'linear-backoff': {
-    defaults: {
-      start: 1000,
-      increment: 1000
-    },
-    getNextInterval: function(count, options) {
-      return options.start + (options.increment * (count - 1));
-    }
-  },
-
-  'exponential-backoff': {
-    defaults: {
-      min: 1000,
-      max: 30000
-    },
-    getNextInterval: function(count, options) {
-      const rand = Math.round(Math.random() * (Math.pow(2, count) * 1000 - options.min));
-      return Math.min(options.max, rand);
-    }
-  }
-};
 
 const DEFAULTS = {
   strategy: 'fixed-interval',
