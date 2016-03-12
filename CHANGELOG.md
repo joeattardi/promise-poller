@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.2.0 (March 12, 2016)
+
+* Added timeout support.
+
 ## 1.1.0 (March 5, 2016)
 
 * Added support for different polling strategies (`fixed-interval`, `linear-backoff`, and `exponential-backoff`).
