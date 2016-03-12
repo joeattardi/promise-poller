@@ -1,5 +1,4 @@
 import promisePoller from '../lib/promise-poller';
-import strategies from '../lib/strategies';
 import Promise from 'bluebird';
 
 describe('Promise Poller', function() {
@@ -27,11 +26,32 @@ describe('Promise Poller', function() {
       taskFn: () => Promise.reject('derp'),
       interval: 500,
       retries: 3
-    }).then(() => fail('Promised was resolved'),
+    }).then(() => fail('Promise was resolved'),
       (err) => {
         expect(err).toBe('derp');
         done();
       });
+  });
+
+  it('fails the poll if the timeout is exceeded', function(done) {
+    const taskFn = () => {
+      return new Promise(function(resolve, reject) {
+        setTimeout(() => resolve('derp'), 5000);
+      });
+    };
+
+    promisePoller({
+      taskFn,
+      timeout: 1000,
+      interval: 500,
+      retries: 3
+    }).then(() => {
+      fail('Promise was resolved, should have timed out');
+      done();
+    }, (error) => { 
+      expect(error.message.indexOf('timed out')).not.toBeLessThan(0);
+      done();
+    });
   });
 
   it('waits the given interval between attempts', function(done) {
@@ -148,49 +168,4 @@ describe('Promise Poller', function() {
       done();
     });
   });
-  
-  describe('fixed interval strategy', function() {
-    it('polls on a fixed interval', function() {
-      const options = {
-        interval: 1000  
-      };
-
-      const expectedIntervals = [1000, 1000, 1000, 1000, 1000];
-      expectedIntervals.forEach((interval, index) => {
-        expect(strategies['fixed-interval'].getNextInterval(index, options)).toEqual(interval);
-      });
-    });
-  });
-
-  describe('linear backoff strategy', function() {
-    it('increases the interval linearly', function() {
-      const options = {
-        start: 1000,
-        increment: 500
-      };
-
-      const expectedIntervals = [1000, 1500, 2000, 2500, 3000];
-      expectedIntervals.forEach((interval, index) => {
-        expect(strategies['linear-backoff'].getNextInterval(index, options)).toEqual(interval);
-      });
-    });
-  });
-
-  describe('exponential backoff strategy', function() {
-    it('uses exponential backoff with jitter', function() {
-      const randoms = [0.2, 0.4, 0.6, 0.8, 0.9];
-      const expectedIntervals = [1000, 1400, 2800, 6600, 10000];
-      Math.random = () => randoms.shift();
-
-      const options = {
-        min: 1000,
-        max: 10000
-      };
-
-      expectedIntervals.forEach((interval, index) => {
-        expect(strategies['exponential-backoff'].getNextInterval(index, options)).toEqual(interval);
-      });
-    });
-  });
-
 });
