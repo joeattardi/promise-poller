@@ -24,7 +24,7 @@ The core of `promise-poller` is a *task function*. This is simply a function tha
 
 The `promisePoller` function will return a "master promise". This promise will be resolved when your task succeeds, or rejected if your task fails and no retries remain.
 
-The master promise will be resolved with the value that your task promise is resolved with. Similarly, the master promise will be rejected with the *last failure*.
+The master promise will be resolved with the value that your task promise is resolved with. If the poll fails, the master promise will be rejected with an array of all the rejection reasons for each poll attempt.
 
 `promise-poller` will attempt your task by calling the function and waiting on the returned promise. If the promise is rejected, `promise-poller` will wait one second and try again. It will attempt to execute your task 3 times before rejecting the master promise.
 

@@ -35,6 +35,7 @@ function promisePoller(options = {}) {
 
   return new Promise(function(resolve, reject) {
     let retriesRemaining = options.retries;
+    let rejections = [];
     function poll() {
       let taskPromise = Promise.resolve(options.taskFn());
       if (options.timeout) {
@@ -44,13 +45,14 @@ function promisePoller(options = {}) {
         debug(`(${options.name}) Poll succeeded. Resolving master promise.`);
         resolve(result);
       }, function(err) {
+        rejections.push(err);
         if (typeof options.progressCallback === 'function') {
           options.progressCallback(retriesRemaining, err);
         }
 
         if (!--retriesRemaining) {
           debug(`(${options.name}) Maximum retries reached. Rejecting master promise.`);
-          reject(err);
+          reject(rejections);
         } else {
           debug(`(${options.name}) Poll failed. ${retriesRemaining} retries remaining.`);
 

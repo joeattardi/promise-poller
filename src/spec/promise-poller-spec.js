@@ -28,7 +28,19 @@ describe('Promise Poller', function() {
       retries: 3
     }).then(() => fail('Promise was resolved'),
       (err) => {
-        expect(err).toBe('derp');
+        done();
+      });
+  });
+
+  it('rejects the master promise with an array of rejections', function(done) {
+    let counter = 0;
+    promisePoller({
+      taskFn: () => Promise.reject(++counter),
+      interval: 500,
+      retries: 3
+    }).then(() => fail('Promise was resolved'),
+      (errs) => {
+        expect(errs).toEqual([1, 2, 3]);
         done();
       });
   });
@@ -49,7 +61,7 @@ describe('Promise Poller', function() {
       fail('Promise was resolved, should have timed out');
       done();
     }, (error) => { 
-      expect(error.message.indexOf('timed out')).not.toBeLessThan(0);
+      expect(error[2].message.indexOf('timed out')).not.toBeLessThan(0);
       done();
     });
   });
