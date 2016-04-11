@@ -24,7 +24,7 @@ const strategies = {
       max: 30000
     },
     getNextInterval: function(count, options) {
-     return Math.min(options.max, Math.round(Math.random() * (Math.pow(2, count) * 1000 - options.min) + options.min));
+      return Math.min(options.max, Math.round(Math.random() * (Math.pow(2, count) * 1000 - options.min) + options.min));
     }
   }
 };

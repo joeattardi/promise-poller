@@ -27,7 +27,7 @@ describe('Promise Poller', function() {
       interval: 500,
       retries: 3
     }).then(() => fail('Promise was resolved'),
-      (err) => {
+      () => {
         done();
       });
   });
@@ -47,7 +47,7 @@ describe('Promise Poller', function() {
 
   it('fails the poll if the timeout is exceeded', function(done) {
     const taskFn = () => {
-      return new Promise(function(resolve, reject) {
+      return new Promise(function(resolve) {
         setTimeout(() => resolve('derp'), 5000);
       });
     };
