@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.4.0 (April 21, 2016)
+
+ * Added master timeout support.
+
 ## 1.3.0 (March 22, 2016)
 
 * Changed master promise rejection to include all errors from all poll rejections.

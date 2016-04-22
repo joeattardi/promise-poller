@@ -36,11 +36,18 @@ function promisePoller(options = {}) {
   return new Promise(function(resolve, reject) {
     let retriesRemaining = options.retries;
     let rejections = [];
+
+    if (options.masterTimeout) {
+      setTimeout(() => reject('master timeout'), options.globalTimeout);
+    }
+
     function poll() {
       let taskPromise = Promise.resolve(options.taskFn());
+
       if (options.timeout) {
         taskPromise = taskPromise.timeout(options.timeout);
       }
+
       taskPromise.then(function(result) {
         debug(`(${options.name}) Poll succeeded. Resolving master promise.`);
         resolve(result);

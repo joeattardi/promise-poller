@@ -38,7 +38,7 @@ You can specify a different polling interval or number of retries:
     });
 
 ## Specify timeout
-If you want the poll to reject after a certain timeout has passed, use the `timeout` option:
+If you want each poll attempt to reject after a certain timeout has passed, use the `timeout` option:
 
     var poller = promisePoller({
       taskFn: myTask,
@@ -46,7 +46,19 @@ If you want the poll to reject after a certain timeout has passed, use the `time
       timeout: 2000
     });
 
-In the above example, the poll is considered failed if it isn't resolved after 2 seconds.
+In the above example, the poll is considered failed if it isn't resolved after 2 seconds. If there are retries remaining, it will retry the poll as usual.
+
+## Specify "master timeout"
+Instead of timing out each poll attempt, you can set a timeout for the entire master polling operation:
+
+    var poller = promisePoller({
+      taskFn: myTask,
+      interval: 500,
+      retries: 10,
+      masterTimeout: 2000
+    });
+
+In the above example, the entire poll operation will fail if there is not a successful poll within 2 seconds. This will reject the master promise.
 
 ## Select polling strategy
 By default, `promise-poller` will use a fixed interval between each poll attempt. For example, with an `interval` option of 500, the poller will poll approximately every 500 milliseconds. This is the `fixed-interval` strategy. There are two other strategies available that may better suit your use case. To select a polling strategy, specify the `strategy` option, e.g.:

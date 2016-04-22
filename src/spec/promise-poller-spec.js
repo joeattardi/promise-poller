@@ -66,6 +66,29 @@ describe('Promise Poller', function() {
     });
   });
 
+  it('rejects the master promise if the master timeout is exceeded', function(done) {
+    let numPolls = 0;
+
+    const taskFn = () => {
+      return new Promise(function(resolve, reject) {
+        numPolls += 1;
+        setTimeout(() => reject('derp'), 250);
+      });
+    };
+
+    promisePoller({
+      taskFn,
+      masterTimeout: 500,
+      retries: 10
+    }).then(() => {
+      fail('Master promise was resolved, should have hit master timeout');
+      done();
+    }, () => {
+      expect(numPolls).not.toBeGreaterThan(2);
+      done();
+    });
+  });
+
   it('waits the given interval between attempts', function(done) {
     let last = 0;
     let now;
