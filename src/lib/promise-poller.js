@@ -11,7 +11,7 @@ const DEFAULTS = {
 
 let pollerCount = 0;
 
-function promisePoller(options = {}) {
+export default function promisePoller(options = {}) {
   if (typeof options.taskFn !== 'function') {
     throw new Error('No taskFn function specified in options');
   }
@@ -75,4 +75,3 @@ function promisePoller(options = {}) {
   });
 }
 
-module.exports = promisePoller;

@@ -11,7 +11,7 @@ Sometimes, you may perform asynchronous operations that may fail. In many of tho
 ## Basic usage
 The core of `promise-poller` is a *task function*. This is simply a function that starts your asynchronous task and returns a promise. If the task function does not return a promise, it will be wrapped in a promise. To start polling, pass your task function to the `promisePoller` function:
 
-    var promisePoller = require('promise-poller');
+    import promisePoller from 'promise-poller';
 
     function myTask() {
       // do some async stuff that returns a promise
@@ -27,6 +27,11 @@ The `promisePoller` function will return a "master promise". This promise will b
 The master promise will be resolved with the value that your task promise is resolved with. If the poll fails, the master promise will be rejected with an array of all the rejection reasons for each poll attempt.
 
 `promise-poller` will attempt your task by calling the function and waiting on the returned promise. If the promise is rejected, `promise-poller` will wait one second and try again. It will attempt to execute your task 3 times before rejecting the master promise.
+
+### Use in non-ES2015 environments
+`promise-poller` is written using ES2015 and transpiled with Babel. The main `promisePoller` function is the default export. If you are using `promise-poller` in an ES5 environment, you will have to specify the `default` property when requiring the library in:
+
+    var promisePoller = require('promise-poller').default;
 
 ## Specify polling options
 You can specify a different polling interval or number of retries:
