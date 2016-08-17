@@ -42,7 +42,14 @@ export default function promisePoller(options = {}) {
     }
 
     function poll() {
-      let taskPromise = Promise.resolve(options.taskFn());
+      let task = options.taskFn();
+
+      if (task === false) {
+        task = Promise.reject('Cancelled');
+        retriesRemaining = 1;
+      }
+
+      let taskPromise = Promise.resolve(task);
 
       if (options.timeout) {
         taskPromise = taskPromise.timeout(options.timeout);

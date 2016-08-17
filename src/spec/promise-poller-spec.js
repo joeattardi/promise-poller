@@ -203,4 +203,25 @@ describe('Promise Poller', function() {
       done();
     });
   });
+
+  it('rejects the master promise if false is returned from the task function', function(done) {
+    let counter = 0;
+    const taskFn = () => {
+      if (++counter === 1) {
+        return false;
+      } else {
+        return Promise.reject('derp');
+      }
+    };
+
+    promisePoller({
+      taskFn,
+      interval: 500,
+      retries: 3
+    }).then(fail, err => {
+      expect(err).toEqual(['Cancelled']);
+      expect(counter).toEqual(1);
+      done();
+    });
+  });
 });

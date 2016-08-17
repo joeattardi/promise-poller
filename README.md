@@ -65,6 +65,9 @@ Instead of timing out each poll attempt, you can set a timeout for the entire ma
 
 In the above example, the entire poll operation will fail if there is not a successful poll within 2 seconds. This will reject the master promise.
 
+## Cancel polling
+You may want to cancel the polling early. For example, if the poll fails because of an invalid password, that's not likely to change, so it would be a waste of time to continue to poll. To cancel polling early, return `false` from the task function instead of a promise.
+
 ## Select polling strategy
 By default, `promise-poller` will use a fixed interval between each poll attempt. For example, with an `interval` option of 500, the poller will poll approximately every 500 milliseconds. This is the `fixed-interval` strategy. There are two other strategies available that may better suit your use case. To select a polling strategy, specify the `strategy` option, e.g.:
 
