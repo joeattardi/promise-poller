@@ -52,7 +52,9 @@ export default function promisePoller(options = {}) {
 
       if (task === false) {
         task = Promise.reject('Cancelled');
-        retriesRemaining = 1;
+        debug(`(${options.name}) Task function returned false, canceling.`);
+        reject(rejections);
+        polling = false;
       }
 
       let taskPromise = Promise.resolve(task);
