@@ -1,4 +1,11 @@
 # Change Log
+## 1.5.1 (October 6, 2016)
+
+ * Fixed the master timeout so that it fires properly and no subsequent polls are made.
+
+## 1.5.0 (August 17, 2016)
+ 
+ * Added feature to reject the master promise if the task function returns false
 
 ## 1.4.0 (April 21, 2016)
 
