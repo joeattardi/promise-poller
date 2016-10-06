@@ -34,11 +34,17 @@ export default function promisePoller(options = {}) {
   });
 
   return new Promise(function(resolve, reject) {
+    let polling = true;
     let retriesRemaining = options.retries;
     let rejections = [];
 
     if (options.masterTimeout) {
-      setTimeout(() => reject('master timeout'), options.globalTimeout);
+      debug(`(${options.name}) Using master timeout of ${options.masterTimeout} ms.`);
+      setTimeout(() => {
+        debug(`(${options.name}) Master timeout reached. Rejecting master promise.`);
+        polling = false;
+        reject('master timeout');
+      }, options.masterTimeout );
     }
 
     function poll() {
@@ -67,7 +73,7 @@ export default function promisePoller(options = {}) {
         if (!--retriesRemaining) {
           debug(`(${options.name}) Maximum retries reached. Rejecting master promise.`);
           reject(rejections);
-        } else {
+        } else if (polling) {
           debug(`(${options.name}) Poll failed. ${retriesRemaining} retries remaining.`);
 
           const nextInterval = strategy.getNextInterval(options.retries - retriesRemaining, options);
