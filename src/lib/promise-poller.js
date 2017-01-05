@@ -37,10 +37,11 @@ export default function promisePoller(options = {}) {
     let polling = true;
     let retriesRemaining = options.retries;
     let rejections = [];
+    let timeoutId = null;
 
     if (options.masterTimeout) {
       debug(`(${options.name}) Using master timeout of ${options.masterTimeout} ms.`);
-      setTimeout(() => {
+      timeoutId = setTimeout(() => {
         debug(`(${options.name}) Master timeout reached. Rejecting master promise.`);
         polling = false;
         reject('master timeout');
@@ -65,6 +66,9 @@ export default function promisePoller(options = {}) {
 
       taskPromise.then(function(result) {
         debug(`(${options.name}) Poll succeeded. Resolving master promise.`);
+        if(timeoutId !== null) {
+          clearTimeout(timeoutId);
+        }
         resolve(result);
       }, function(err) {
         rejections.push(err);

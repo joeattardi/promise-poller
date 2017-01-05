@@ -224,4 +224,19 @@ describe('Promise Poller', function() {
       done();
     });
   });
+
+  it('clears the master timeout if the master promise resolves', function(done) {
+    const globalObj = jasmine.getGlobal();
+    spyOn(globalObj, 'setTimeout').and.callFake(() => 42);
+    spyOn(globalObj, 'clearTimeout');
+    promisePoller({
+      taskFn: () => Promise.resolve('foobar'),
+      masterTimeout: 10000
+    }).then(val => {
+      expect(val).toEqual('foobar');
+      expect(globalObj.setTimeout).toHaveBeenCalled();
+      expect(globalObj.clearTimeout).toHaveBeenCalledWith(42);
+      done();
+    });
+  });
 });
