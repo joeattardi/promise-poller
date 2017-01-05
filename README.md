@@ -129,6 +129,7 @@ When this poller prints debug messages, the poller name will be included:
 # Contributors
 * Joe Attardi
 * /u/jcready
+* Jason Stitt
 
 # License
 The MIT License (MIT)
