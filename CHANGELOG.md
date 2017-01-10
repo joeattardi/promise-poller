@@ -1,4 +1,8 @@
 # Change Log
+## 1.5.2 (January 9, 2017)
+
+ * Fixed the master timeout so that it doesn't make the program hang. Contributed by Jason Stitt.
+
 ## 1.5.1 (October 6, 2016)
 
  * Fixed the master timeout so that it fires properly and no subsequent polls are made.

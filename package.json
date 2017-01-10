@@ -1,6 +1,6 @@
 {
   "name": "promise-poller",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "description": "A basic poller built on top of promises",
   "main": "dist/lib/promise-poller.js",
   "scripts": {
