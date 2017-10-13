@@ -239,4 +239,40 @@ describe('Promise Poller', function() {
       done();
     });
   });
+
+  it('bails out when shouldContinue returns false', function(done) {
+    let counter = 0;
+    const taskFn = () => {
+      return Promise.reject(++counter);
+    };
+
+    promisePoller({
+      taskFn,
+      shouldContinue(err) {
+        if (err === 1) {
+          return false;
+        }
+      }
+    }).then(fail, err => {
+      expect(err).toEqual([1]);
+      done();
+    });
+  });
+
+  it('continues to poll on success if shouldContinue returns true', function(done) {
+    let counter = 0;
+    const taskFn = () => {
+      return Promise.resolve(++counter);
+    };
+
+    promisePoller({
+      taskFn,
+      shouldContinue(err, result) {
+        return result < 3;
+      }
+    }).then(result => {
+      expect(result).toEqual(3);
+      done();
+    });
+  });
 });

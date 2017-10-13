@@ -6,7 +6,10 @@ const debug = debugModule('promisePoller');
 
 const DEFAULTS = {
   strategy: 'fixed-interval',
-  retries: 5
+  retries: 5,
+  shouldContinue: (err) => {
+    return !!err;
+  }
 };
 
 let pollerCount = 0;
@@ -66,17 +69,25 @@ export default function promisePoller(options = {}) {
 
       taskPromise.then(function(result) {
         debug(`(${options.name}) Poll succeeded. Resolving master promise.`);
-        if(timeoutId !== null) {
-          clearTimeout(timeoutId);
+
+        if (options.shouldContinue(null, result)) {
+          debug(`(${options.name}) shouldContinue returned true. Retrying.`);
+          const nextInterval = strategy.getNextInterval(options.retries - retriesRemaining, options);
+          debug(`(${options.name}) Waiting ${nextInterval}ms to try again.`);
+          Promise.delay(nextInterval).then(poll);
+        } else {
+          if(timeoutId !== null) {
+            clearTimeout(timeoutId);
+          }
+          resolve(result);
         }
-        resolve(result);
       }, function(err) {
         rejections.push(err);
         if (typeof options.progressCallback === 'function') {
           options.progressCallback(retriesRemaining, err);
         }
 
-        if (!--retriesRemaining) {
+        if (!--retriesRemaining || !options.shouldContinue(err)) {
           debug(`(${options.name}) Maximum retries reached. Rejecting master promise.`);
           reject(rejections);
         } else if (polling) {

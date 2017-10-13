@@ -68,6 +68,10 @@ In the above example, the entire poll operation will fail if there is not a succ
 ## Cancel polling
 You may want to cancel the polling early. For example, if the poll fails because of an invalid password, that's not likely to change, so it would be a waste of time to continue to poll. To cancel polling early, return `false` from the task function instead of a promise.
 
+## The `shouldContinue` function
+You can specify an optional `shouldContinue` function that takes two arguments. The first argument is a rejection reason when a poll fails, and the second argument is the resolved value when a poll succeeds. 
+If the poll attempt failed, and you want to abort further polling, return `false` from this function. On the other hand, if your poll resolved to a value but you want to keep polling, return `true` from this function.
+
 ## Select polling strategy
 By default, `promise-poller` will use a fixed interval between each poll attempt. For example, with an `interval` option of 500, the poller will poll approximately every 500 milliseconds. This is the `fixed-interval` strategy. There are two other strategies available that may better suit your use case. To select a polling strategy, specify the `strategy` option, e.g.:
 
