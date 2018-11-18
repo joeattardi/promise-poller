@@ -8,7 +8,7 @@
     "build": "babel -d dist src",
     "clean": "rm -rf dist",
     "lint": "eslint src",
-    "test": "jasmine JASMINE_CONFIG_PATH=jasmine.json",
+    "test": "npm run build && jasmine JASMINE_CONFIG_PATH=jasmine.json",
     "prettify": "prettier --write src/**/*js"
   },
   "repository": {

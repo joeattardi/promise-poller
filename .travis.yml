@@ -1,10 +1,5 @@
 language: node_js
 node_js:
-  - "4"
   - "6"
+  - "8"
   - "node"
-before_install:
-  - npm install -g babel-cli
-  - npm install -g jasmine
-  - npm install -g eslint
-
