@@ -15,10 +15,13 @@ describe('Promise Poller', function() {
       taskFn: () => Promise.resolve('yay'),
       interval: 500,
       retries: 3
-    }).then(result => {
-      expect(result).toBe('yay');
-      done();
-    }, () => fail('Master promise was rejected'));
+    }).then(
+      result => {
+        expect(result).toBe('yay');
+        done();
+      },
+      () => fail('Master promise was rejected')
+    );
   });
 
   it('rejects the master promise when the poll fails', function(done) {
@@ -26,10 +29,12 @@ describe('Promise Poller', function() {
       taskFn: () => Promise.reject('derp'),
       interval: 500,
       retries: 3
-    }).then(() => fail('Promise was resolved'),
+    }).then(
+      () => fail('Promise was resolved'),
       () => {
         done();
-      });
+      }
+    );
   });
 
   it('rejects the master promise with an array of rejections', function(done) {
@@ -38,11 +43,13 @@ describe('Promise Poller', function() {
       taskFn: () => Promise.reject(++counter),
       interval: 500,
       retries: 3
-    }).then(() => fail('Promise was resolved'),
-      (errs) => {
+    }).then(
+      () => fail('Promise was resolved'),
+      errs => {
         expect(errs).toEqual([1, 2, 3]);
         done();
-      });
+      }
+    );
   });
 
   it('fails the poll if the timeout is exceeded', function(done) {
@@ -57,13 +64,16 @@ describe('Promise Poller', function() {
       timeout: 1000,
       interval: 500,
       retries: 3
-    }).then(() => {
-      fail('Promise was resolved, should have timed out');
-      done();
-    }, (error) => { 
-      expect(error[2].message.indexOf('timed out')).not.toBeLessThan(0);
-      done();
-    });
+    }).then(
+      () => {
+        fail('Promise was resolved, should have timed out');
+        done();
+      },
+      error => {
+        expect(error[2].message.indexOf('timed out')).not.toBeLessThan(0);
+        done();
+      }
+    );
   });
 
   it('rejects the master promise if the master timeout is exceeded', function(done) {
@@ -80,13 +90,16 @@ describe('Promise Poller', function() {
       taskFn,
       masterTimeout: 500,
       retries: 10
-    }).then(() => {
-      fail('Master promise was resolved, should have hit master timeout');
-      done();
-    }, () => {
-      expect(numPolls).not.toBeGreaterThan(2);
-      done();
-    });
+    }).then(
+      () => {
+        fail('Master promise was resolved, should have hit master timeout');
+        done();
+      },
+      () => {
+        expect(numPolls).not.toBeGreaterThan(2);
+        done();
+      }
+    );
   });
 
   it('waits the given interval between attempts', function(done) {
@@ -141,7 +154,7 @@ describe('Promise Poller', function() {
     });
   });
 
-  it ('uses the default interval of 500 if not specified', function(done) {
+  it('uses the default interval of 500 if not specified', function(done) {
     let last = 0;
     let now;
     const taskFn = () => {
@@ -195,7 +208,9 @@ describe('Promise Poller', function() {
 
   it('fails the poll if an exception is thrown in the task function', function(done) {
     promisePoller({
-      taskFn: () => { throw new Error('oops'); },
+      taskFn: () => {
+        throw new Error('oops');
+      },
       interval: 500,
       retries: 3
     }).then(null, err => {

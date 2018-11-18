@@ -4,7 +4,7 @@ describe('promise-poller strategies', function() {
   describe('fixed interval strategy', function() {
     it('polls on a fixed interval', function() {
       const options = {
-        interval: 1000  
+        interval: 1000
       };
 
       const expectedIntervals = [1000, 1000, 1000, 1000, 1000];

@@ -14,7 +14,7 @@ const strategies = {
       increment: 1000
     },
     getNextInterval: function(count, options) {
-      return options.start + (options.increment * (count));
+      return options.start + options.increment * count;
     }
   },
 
