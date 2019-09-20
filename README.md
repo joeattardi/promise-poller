@@ -124,7 +124,7 @@ If you have more than one poller active at a time, and you need to differentiate
       interval: 500,
       retries: 5,
       name: 'App Server Poller'
-    )};
+    });
 
 When this poller prints debug messages, the poller name will be included:
 
