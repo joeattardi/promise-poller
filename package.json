@@ -24,7 +24,7 @@
     "timeout",
     "ajax"
   ],
-  "author": "Joe Attardi <joe@attardi.net> (http://www.thinksincode.com/)",
+  "author": "Joe Attardi <jattardi@gmail.com> (https://joeattardi.codes/)",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/joeattardi/promise-poller/issues"

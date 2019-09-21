@@ -1,4 +1,18 @@
 # Change Log
+## 1.8.0 (September 20, 2019)
+
+ * Removed the dependency on Bluebird. The global `Promise` object is used instead.
+
+## 1.7.0 (November 17, 2018)
+
+ * Fixed some broken tests.
+ * Added Prettier.
+ * Updated dependencies.
+
+## 1.6.0 (October 12, 2017)
+
+ * Added support for the `showContinue` function.
+
 ## 1.5.2 (January 9, 2017)
 
  * Fixed the master timeout so that it doesn't make the program hang. Contributed by Jason Stitt.
