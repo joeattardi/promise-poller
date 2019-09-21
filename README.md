@@ -134,6 +134,7 @@ When this poller prints debug messages, the poller name will be included:
 * Joe Attardi
 * /u/jcready
 * Jason Stitt
+* Emily Marigold Klassen
 
 # License
 The MIT License (MIT)
