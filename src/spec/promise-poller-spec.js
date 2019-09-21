@@ -1,4 +1,4 @@
-import promisePoller from '../lib/promise-poller';
+import promisePoller, { CANCEL_TOKEN } from '../lib/promise-poller';
 
 describe('Promise Poller', () => {
   it('returns a promise', () => {
@@ -227,6 +227,27 @@ describe('Promise Poller', () => {
       retries: 3
     }).then(fail, err => {
       expect(err).toEqual(['Cancelled']);
+      expect(counter).toEqual(1);
+      done();
+    });
+  });
+
+  it('rejects the master promise if the task promise rejects with the cancel token', done => {
+    let counter = 0;
+    const taskFn = () => {
+      if (++counter === 1) {
+        return Promise.reject(CANCEL_TOKEN);
+      } else {
+        return Promise.reject('derp');
+      }
+    };
+
+    promisePoller({
+      taskFn,
+      interval: 500,
+      retries: 3
+    }).then(fail, err => {
+      expect(err).toEqual([CANCEL_TOKEN]);
       expect(counter).toEqual(1);
       done();
     });

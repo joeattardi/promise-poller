@@ -68,6 +68,26 @@ In the above example, the entire poll operation will fail if there is not a succ
 ## Cancel polling
 You may want to cancel the polling early. For example, if the poll fails because of an invalid password, that's not likely to change, so it would be a waste of time to continue to poll. To cancel polling early, return `false` from the task function instead of a promise.
 
+Alternatively, if your task function involves async work with promises, you can reject the promise with the `CANCEL_TOKEN` object.
+
+### Cancellation example
+
+```javascript
+import promisePoller, { CANCEL_TOKEN } from 'promise-poller';
+
+const taskFn = () => {
+  return new Promise((resolve, reject) => {
+    doAsyncStuff.then(resolve, error => {
+      if (error === 'invalid password') {
+        reject(CANCEL_TOKEN); // will cancel polling
+      } else {
+        reject(error); // will continue polling
+      }
+    });
+  });
+}
+```
+
 ## The `shouldContinue` function
 You can specify an optional `shouldContinue` function that takes two arguments. The first argument is a rejection reason when a poll fails, and the second argument is the resolved value when a poll succeeds. 
 If the poll attempt failed, and you want to abort further polling, return `false` from this function. On the other hand, if your poll resolved to a value but you want to keep polling, return `true` from this function.

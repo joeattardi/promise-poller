@@ -14,6 +14,8 @@ const DEFAULTS = {
 
 let pollerCount = 0;
 
+export const CANCEL_TOKEN = {};
+
 export default function promisePoller(options = {}) {
   function debug(message) {
     debugMessage(`(${options.name}): ${message}`);
@@ -88,6 +90,12 @@ export default function promisePoller(options = {}) {
           }
         },
         function(err) {
+          if (err === CANCEL_TOKEN) {
+            debug('Task promise rejected with CANCEL_TOKEN, canceling.');
+            reject(rejections);
+            polling = false;
+          }
+
           rejections.push(err);
           if (typeof options.progressCallback === 'function') {
             options.progressCallback(retriesRemaining, err);
