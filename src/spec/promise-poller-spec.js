@@ -1,7 +1,7 @@
 import promisePoller from '../lib/promise-poller';
 
-describe('Promise Poller', function() {
-  it('returns a promise', function() {
+describe('Promise Poller', () => {
+  it('returns a promise', () => {
     const poller = promisePoller({
       taskFn: () => Promise.resolve('yay')
     });
@@ -9,7 +9,7 @@ describe('Promise Poller', function() {
     expect(typeof poller.then).toBe('function');
   });
 
-  it('resolves the master promise when the poll succeeds', function(done) {
+  it('resolves the master promise when the poll succeeds', done => {
     promisePoller({
       taskFn: () => Promise.resolve('yay'),
       interval: 500,
@@ -23,20 +23,15 @@ describe('Promise Poller', function() {
     );
   });
 
-  it('rejects the master promise when the poll fails', function(done) {
+  it('rejects the master promise when the poll fails', done => {
     promisePoller({
       taskFn: () => Promise.reject('derp'),
       interval: 500,
       retries: 3
-    }).then(
-      () => fail('Promise was resolved'),
-      () => {
-        done();
-      }
-    );
+    }).then(() => fail('Promise was resolved'), done);
   });
 
-  it('rejects the master promise with an array of rejections', function(done) {
+  it('rejects the master promise with an array of rejections', done => {
     let counter = 0;
     promisePoller({
       taskFn: () => Promise.reject(++counter),
@@ -51,12 +46,11 @@ describe('Promise Poller', function() {
     );
   });
 
-  it('fails the poll if the timeout is exceeded', function(done) {
-    const taskFn = () => {
-      return new Promise(function(resolve) {
+  it('fails the poll if the timeout is exceeded', done => {
+    const taskFn = () =>
+      new Promise(function(resolve) {
         setTimeout(() => resolve('derp'), 5000);
       });
-    };
 
     promisePoller({
       taskFn,
@@ -75,15 +69,14 @@ describe('Promise Poller', function() {
     );
   });
 
-  it('rejects the master promise if the master timeout is exceeded', function(done) {
+  it('rejects the master promise if the master timeout is exceeded', done => {
     let numPolls = 0;
 
-    const taskFn = () => {
-      return new Promise(function(resolve, reject) {
+    const taskFn = () =>
+      new Promise(function(resolve, reject) {
         numPolls += 1;
         setTimeout(() => reject('derp'), 250);
       });
-    };
 
     promisePoller({
       taskFn,
@@ -101,7 +94,7 @@ describe('Promise Poller', function() {
     );
   });
 
-  it('waits the given interval between attempts', function(done) {
+  it('waits the given interval between attempts', done => {
     let last = 0;
     let now;
     const taskFn = () => {
@@ -120,7 +113,7 @@ describe('Promise Poller', function() {
     }).then(null, done);
   });
 
-  it('uses the default retries of 5 if not specified', function(done) {
+  it('uses the default retries of 5 if not specified', done => {
     let counter = 0;
     const taskFn = () => {
       counter++;
@@ -136,7 +129,7 @@ describe('Promise Poller', function() {
     });
   });
 
-  it('tries <retries> times before giving up', function(done) {
+  it('tries <retries> times before giving up', done => {
     let counter = 0;
     const taskFn = () => {
       counter++;
@@ -153,7 +146,7 @@ describe('Promise Poller', function() {
     });
   });
 
-  it('uses the default interval of 500 if not specified', function(done) {
+  it('uses the default interval of 500 if not specified', done => {
     let last = 0;
     let now;
     const taskFn = () => {
@@ -171,12 +164,12 @@ describe('Promise Poller', function() {
     }).then(null, done);
   });
 
-  it('throws an exception if no taskFn was specified', function() {
+  it('throws an exception if no taskFn was specified', () => {
     const fn = () => promisePoller();
     expect(fn).toThrowError(/No taskFn/);
   });
 
-  it('calls the progress callback with each failure', function(done) {
+  it('calls the progress callback with each failure', done => {
     let count = 0;
     let callback = function(retriesRemaining, error) {
       expect(error).toEqual('derp');
@@ -194,7 +187,7 @@ describe('Promise Poller', function() {
     });
   });
 
-  it('wraps a non-promise task function return in Promise.resolve', function(done) {
+  it('wraps a non-promise task function return in Promise.resolve', done => {
     promisePoller({
       taskFn: () => 'foobar',
       interval: 500,
@@ -205,7 +198,7 @@ describe('Promise Poller', function() {
     });
   });
 
-  it('fails the poll if an exception is thrown in the task function', function(done) {
+  it('fails the poll if an exception is thrown in the task function', done => {
     promisePoller({
       taskFn: () => {
         throw new Error('oops');
@@ -218,7 +211,7 @@ describe('Promise Poller', function() {
     });
   });
 
-  it('rejects the master promise if false is returned from the task function', function(done) {
+  it('rejects the master promise if false is returned from the task function', done => {
     let counter = 0;
     const taskFn = () => {
       if (++counter === 1) {
@@ -239,7 +232,7 @@ describe('Promise Poller', function() {
     });
   });
 
-  it('clears the master timeout if the master promise resolves', function(done) {
+  it('clears the master timeout if the master promise resolves', done => {
     const globalObj = jasmine.getGlobal();
     spyOn(globalObj, 'setTimeout').and.callFake(() => 42);
     spyOn(globalObj, 'clearTimeout');
@@ -254,11 +247,9 @@ describe('Promise Poller', function() {
     });
   });
 
-  it('bails out when shouldContinue returns false', function(done) {
+  it('bails out when shouldContinue returns false', done => {
     let counter = 0;
-    const taskFn = () => {
-      return Promise.reject(++counter);
-    };
+    const taskFn = () => Promise.reject(++counter);
 
     promisePoller({
       taskFn,
@@ -273,11 +264,9 @@ describe('Promise Poller', function() {
     });
   });
 
-  it('continues to poll on success if shouldContinue returns true', function(done) {
+  it('continues to poll on success if shouldContinue returns true', done => {
     let counter = 0;
-    const taskFn = () => {
-      return Promise.resolve(++counter);
-    };
+    const taskFn = () => Promise.resolve(++counter);
 
     promisePoller({
       taskFn,

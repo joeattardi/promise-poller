@@ -1,8 +1,8 @@
 import strategies from '../lib/strategies';
 
-describe('promise-poller strategies', function() {
-  describe('fixed interval strategy', function() {
-    it('polls on a fixed interval', function() {
+describe('promise-poller strategies', () => {
+  describe('fixed interval strategy', () => {
+    it('polls on a fixed interval', () => {
       const options = {
         interval: 1000
       };
@@ -14,8 +14,8 @@ describe('promise-poller strategies', function() {
     });
   });
 
-  describe('linear backoff strategy', function() {
-    it('increases the interval linearly', function() {
+  describe('linear backoff strategy', () => {
+    it('increases the interval linearly', () => {
       const options = {
         start: 1000,
         increment: 500
@@ -28,8 +28,8 @@ describe('promise-poller strategies', function() {
     });
   });
 
-  describe('exponential backoff strategy', function() {
-    it('uses exponential backoff with jitter', function() {
+  describe('exponential backoff strategy', () => {
+    it('uses exponential backoff with jitter', () => {
       const randoms = [0.2, 0.4, 0.6, 0.8, 0.9];
       const expectedIntervals = [1000, 1400, 2800, 6600, 10000];
       Math.random = () => randoms.shift();

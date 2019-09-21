@@ -1,7 +1,8 @@
 import debugModule from 'debug';
 import strategies from './strategies';
+import { timeout, delay } from './util';
 
-const debug = debugModule('promisePoller');
+const debugMessage = debugModule('promisePoller');
 
 const DEFAULTS = {
   strategy: 'fixed-interval',
@@ -14,11 +15,15 @@ const DEFAULTS = {
 let pollerCount = 0;
 
 export default function promisePoller(options = {}) {
+  function debug(message) {
+    debugMessage(`(${options.name}): ${message}`);
+  }
+
   if (typeof options.taskFn !== 'function') {
     throw new Error('No taskFn function specified in options');
   }
 
-  Object.keys(DEFAULTS).forEach(option => (options[option] = options[option] || DEFAULTS[option]));
+  options = Object.assign({}, DEFAULTS, options);
   options.name = options.name || `Poller-${pollerCount++}`;
   debug(`Creating a promise poller "${options.name}" with interval=${options.interval}, retries=${options.retries}`);
 
@@ -26,11 +31,11 @@ export default function promisePoller(options = {}) {
     throw new Error(`Invalid strategy "${options.strategy}". Valid strategies are ${Object.keys(strategies)}`);
   }
   const strategy = strategies[options.strategy];
-  debug(`(${options.name}) Using strategy "${options.strategy}".`);
+  debug(`Using strategy "${options.strategy}".`);
   const strategyDefaults = strategy.defaults;
   Object.keys(strategyDefaults).forEach(option => (options[option] = options[option] || strategyDefaults[option]));
 
-  debug(`(${options.name}) Options:`);
+  debug('Options:');
   Object.keys(options).forEach(option => {
     debug(`    "${option}": ${options[option]}`);
   });
@@ -42,9 +47,9 @@ export default function promisePoller(options = {}) {
     let timeoutId = null;
 
     if (options.masterTimeout) {
-      debug(`(${options.name}) Using master timeout of ${options.masterTimeout} ms.`);
+      debug(`Using master timeout of ${options.masterTimeout} ms.`);
       timeoutId = setTimeout(() => {
-        debug(`(${options.name}) Master timeout reached. Rejecting master promise.`);
+        debug('Master timeout reached. Rejecting master promise.');
         polling = false;
         reject('master timeout');
       }, options.masterTimeout);
@@ -55,7 +60,7 @@ export default function promisePoller(options = {}) {
 
       if (task === false) {
         task = Promise.reject('Cancelled');
-        debug(`(${options.name}) Task function returned false, canceling.`);
+        debug('Task function returned false, canceling.');
         reject(rejections);
         polling = false;
       }
@@ -68,12 +73,12 @@ export default function promisePoller(options = {}) {
 
       taskPromise.then(
         function(result) {
-          debug(`(${options.name}) Poll succeeded. Resolving master promise.`);
+          debug('Poll succeeded. Resolving master promise.');
 
           if (options.shouldContinue(null, result)) {
-            debug(`(${options.name}) shouldContinue returned true. Retrying.`);
+            debug('shouldContinue returned true. Retrying.');
             const nextInterval = strategy.getNextInterval(options.retries - retriesRemaining, options);
-            debug(`(${options.name}) Waiting ${nextInterval}ms to try again.`);
+            debug(`Waiting ${nextInterval}ms to try again.`);
             delay(nextInterval).then(poll);
           } else {
             if (timeoutId !== null) {
@@ -89,14 +94,14 @@ export default function promisePoller(options = {}) {
           }
 
           if (!--retriesRemaining || !options.shouldContinue(err)) {
-            debug(`(${options.name}) Maximum retries reached. Rejecting master promise.`);
+            debug('Maximum retries reached. Rejecting master promise.');
             reject(rejections);
           } else if (polling) {
-            debug(`(${options.name}) Poll failed. ${retriesRemaining} retries remaining.`);
+            debug(`Poll failed. ${retriesRemaining} retries remaining.`);
 
             const nextInterval = strategy.getNextInterval(options.retries - retriesRemaining, options);
 
-            debug(`(${options.name}) Waiting ${nextInterval}ms to try again.`);
+            debug(`Waiting ${nextInterval}ms to try again.`);
             delay(nextInterval).then(poll);
           }
         }
@@ -104,22 +109,5 @@ export default function promisePoller(options = {}) {
     }
 
     poll();
-  });
-}
-
-function timeout(promise, millis) {
-  return new Promise((resolve, reject) => {
-    const timeoutId = setTimeout(() => reject(new Error('operation timed out')), millis);
-
-    promise.then(result => {
-      clearTimeout(timeoutId);
-      resolve(result);
-    });
-  });
-}
-
-function delay(millis) {
-  return new Promise(resolve => {
-    setTimeout(resolve, millis);
   });
 }
