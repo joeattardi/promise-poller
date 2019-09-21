@@ -77,7 +77,7 @@ import promisePoller, { CANCEL_TOKEN } from 'promise-poller';
 
 const taskFn = () => {
   return new Promise((resolve, reject) => {
-    doAsyncStuff.then(resolve, error => {
+    doAsyncStuff().then(resolve, error => {
       if (error === 'invalid password') {
         reject(CANCEL_TOKEN); // will cancel polling
       } else {
