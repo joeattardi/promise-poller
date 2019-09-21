@@ -1,5 +1,4 @@
 import promisePoller from '../lib/promise-poller';
-import Promise from 'bluebird';
 
 describe('Promise Poller', function() {
   it('returns a promise', function() {

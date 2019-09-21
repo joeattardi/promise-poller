@@ -43,7 +43,6 @@
     "prettier": "^1.15.2"
   },
   "dependencies": {
-    "bluebird": "^3.5.3",
     "debug": "^4.1.0"
   },
   "husky": {

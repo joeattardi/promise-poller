@@ -1,4 +1,3 @@
-import Promise from 'bluebird';
 import debugModule from 'debug';
 import strategies from './strategies';
 
@@ -64,7 +63,7 @@ export default function promisePoller(options = {}) {
       let taskPromise = Promise.resolve(task);
 
       if (options.timeout) {
-        taskPromise = taskPromise.timeout(options.timeout);
+        taskPromise = timeout(taskPromise, options.timeout);
       }
 
       taskPromise.then(
@@ -75,7 +74,7 @@ export default function promisePoller(options = {}) {
             debug(`(${options.name}) shouldContinue returned true. Retrying.`);
             const nextInterval = strategy.getNextInterval(options.retries - retriesRemaining, options);
             debug(`(${options.name}) Waiting ${nextInterval}ms to try again.`);
-            Promise.delay(nextInterval).then(poll);
+            delay(nextInterval).then(poll);
           } else {
             if (timeoutId !== null) {
               clearTimeout(timeoutId);
@@ -98,12 +97,29 @@ export default function promisePoller(options = {}) {
             const nextInterval = strategy.getNextInterval(options.retries - retriesRemaining, options);
 
             debug(`(${options.name}) Waiting ${nextInterval}ms to try again.`);
-            Promise.delay(nextInterval).then(poll);
+            delay(nextInterval).then(poll);
           }
         }
       );
     }
 
     poll();
+  });
+}
+
+function timeout(promise, millis) {
+  return new Promise((resolve, reject) => {
+    const timeoutId = setTimeout(() => reject(new Error('operation timed out')), millis);
+
+    promise.then(result => {
+      clearTimeout(timeoutId);
+      resolve(result);
+    });
+  });
+}
+
+function delay(millis) {
+  return new Promise(resolve => {
+    setTimeout(resolve, millis);
   });
 }
