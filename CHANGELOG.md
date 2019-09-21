@@ -1,4 +1,9 @@
 # Change Log
+
+## 1.9.0 (September 20, 2019)
+
+ * Added async cancellation via `CANCEL_TOKEN`.
+
 ## 1.8.0 (September 20, 2019)
 
  * Removed the dependency on Bluebird. The global `Promise` object is used instead.
