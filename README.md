@@ -3,7 +3,7 @@
 [![](https://badge.fury.io/js/promise-poller.svg)](https://www.npmjs.com/package/promise-poller)
 [![](https://david-dm.org/joeattardi/promise-poller.svg)](https://david-dm.org/joeattardi/promise-poller)
 
-A basic poller built on top of promises. You can use any promise library that is Promises/A+ compliant.
+A basic poller built on top of promises.
 
 Sometimes, you may perform asynchronous operations that may fail. In many of those cases, you want to retry these operations one or more times before giving up. `promise-poller` handles this elegantly using promises.
 
