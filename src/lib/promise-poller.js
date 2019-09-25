@@ -16,6 +16,26 @@ let pollerCount = 0;
 
 export const CANCEL_TOKEN = {};
 
+/**
+ *
+ * 
+ * @export
+ * @param {Object} options that contains polling options
+ * @param {function} options.taskFn a function that must resolve or reject a promise or return false to stop polling.
+ * @param {Number} options.interval number of ms until taskFn runs again.
+ * @param {Number} [options.retries=5] number of times taskFn is attempted.
+ * @param {String} [options.strategy='fixed-interval'] one of 'fixed-interval', 'linear-backoff', 'exponential-backoff'.
+ * @param {Number} [options.masterTimeout=null] ms to reject taskFns promise regardless of retries.
+ * @returns {Promise} returns taskFn's resolved promise or array of rejections
+ * @example 
+ * promisePoller({
+  *   taskFn: yourFn,
+  *   interval: 500,
+  *   retries: 10,
+  * })
+  * .then(poll => //poll is your taskFn's promise value)
+  * .catch(err => //err is an array of rejected values)
+  */
 export default function promisePoller(options = {}) {
   function debug(message) {
     debugMessage(`(${options.name}): ${message}`);
