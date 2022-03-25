@@ -1,6 +1,6 @@
 import debugModule from 'debug';
 import strategies from './strategies';
-import { timeout, delay } from './util';
+import { delay } from './util';
 
 const debugMessage = debugModule('promisePoller');
 
