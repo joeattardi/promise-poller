@@ -70,7 +70,7 @@ export default function promisePoller(options = {}) {
       let taskPromise = Promise.resolve(task);
 
       if (options.timeout) {
-        taskPromise = timeout(taskPromise, options.timeout);
+        taskPromise = Promise.race([taskPromise, delay(options.timeout)]);
       }
 
       taskPromise.then(
