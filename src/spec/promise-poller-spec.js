@@ -268,6 +268,23 @@ describe('Promise Poller', () => {
     });
   });
 
+  it('rejects with correct error message when task fails and timeout is set', done => {
+    const errorMessage = 'operation failed';
+    const taskFn = () => {
+      return Promise.reject(errorMessage);
+    };
+
+    promisePoller({
+      taskFn,
+      interval: 10,
+      retries: 2,
+      timeout: 10
+    }).then(fail, err => {
+      expect(err).toEqual([errorMessage, errorMessage]);
+      done();
+    });
+  });
+
   it('bails out when shouldContinue returns false', done => {
     let counter = 0;
     const taskFn = () => Promise.reject(++counter);
