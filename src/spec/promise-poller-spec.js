@@ -268,6 +268,41 @@ describe('Promise Poller', () => {
     });
   });
 
+  it('clears the master timeout if all retries failed before', done => {
+    const errorMessage = 'operation failed';
+    const globalObj = jasmine.getGlobal();
+    spyOn(globalObj, 'setTimeout').and.callFake(() => 42);
+    spyOn(globalObj, 'clearTimeout');
+    promisePoller({
+      taskFn: () => Promise.reject(errorMessage),
+      interval: 10,
+      retries: 1,
+      masterTimeout: 10000
+    }).then(fail, err => {
+      expect(err).toEqual([errorMessage]);
+      expect(globalObj.setTimeout).toHaveBeenCalled();
+      expect(globalObj.clearTimeout).toHaveBeenCalledWith(42);
+      done();
+    });
+  });
+
+  it('clears the master timeout if task rejected with CANCEL_TOKEN', done => {
+    const globalObj = jasmine.getGlobal();
+    spyOn(globalObj, 'setTimeout').and.callFake(() => 42);
+    spyOn(globalObj, 'clearTimeout');
+    promisePoller({
+      taskFn: () => Promise.reject(CANCEL_TOKEN),
+      interval: 10,
+      retries: 1,
+      masterTimeout: 10000
+    }).then(fail, err => {
+      expect(err).toEqual([CANCEL_TOKEN]);
+      expect(globalObj.setTimeout).toHaveBeenCalled();
+      expect(globalObj.clearTimeout).toHaveBeenCalledWith(42);
+      done();
+    });
+  });
+
   it('bails out when shouldContinue returns false', done => {
     let counter = 0;
     const taskFn = () => Promise.reject(++counter);

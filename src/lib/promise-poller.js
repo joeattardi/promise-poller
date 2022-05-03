@@ -21,6 +21,12 @@ export default function promisePoller(options = {}) {
     debugMessage(`(${options.name}): ${message}`);
   }
 
+  function clearTimeoutIfDefined(timeout) {
+    if (timeout) {
+      clearTimeout(timeout);
+    }
+  }
+
   if (typeof options.taskFn !== 'function') {
     throw new Error('No taskFn function specified in options');
   }
@@ -46,11 +52,11 @@ export default function promisePoller(options = {}) {
     let polling = true;
     let retriesRemaining = options.retries;
     let rejections = [];
-    let timeoutId = null;
+    let masterTimeout = null;
 
     if (options.masterTimeout) {
       debug(`Using master timeout of ${options.masterTimeout} ms.`);
-      timeoutId = setTimeout(() => {
+      masterTimeout = setTimeout(() => {
         debug('Master timeout reached. Rejecting master promise.');
         polling = false;
         reject('master timeout');
@@ -83,15 +89,14 @@ export default function promisePoller(options = {}) {
             debug(`Waiting ${nextInterval}ms to try again.`);
             delay(nextInterval).then(poll);
           } else {
-            if (timeoutId !== null) {
-              clearTimeout(timeoutId);
-            }
+            clearTimeoutIfDefined(masterTimeout);
             resolve(result);
           }
         },
         function(err) {
           if (err === CANCEL_TOKEN) {
             debug('Task promise rejected with CANCEL_TOKEN, canceling.');
+            clearTimeoutIfDefined(masterTimeout);
             reject(rejections);
             polling = false;
           }
@@ -103,6 +108,7 @@ export default function promisePoller(options = {}) {
 
           if (!--retriesRemaining || !options.shouldContinue(err)) {
             debug('Maximum retries reached. Rejecting master promise.');
+            clearTimeoutIfDefined(masterTimeout);
             reject(rejections);
           } else if (polling) {
             debug(`Poll failed. ${retriesRemaining} retries remaining.`);
