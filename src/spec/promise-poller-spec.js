@@ -299,4 +299,56 @@ describe('Promise Poller', () => {
       done();
     });
   });
+
+  describe('when task succeeds', () => {
+    it('waits the given interval between attempts', done => {
+      let last = 0;
+      let now;
+      const taskFn = () => {
+        now = Date.now();
+        if (last) {
+          expect(now - last).not.toBeLessThan(500);
+        }
+        last = now;
+        return Promise.resolve('w00t');
+      };
+
+      promisePoller({
+        taskFn,
+        interval: 500,
+        retries: 3,
+        shouldContinue() {
+          return true;
+        }
+      }).then(null, done);
+    });
+
+    it('rejects the master promise if the master timeout is exceeded', done => {
+      let numPolls = 0;
+
+      const taskFn = () =>
+        new Promise(function(resolve) {
+          numPolls += 1;
+          setTimeout(() => resolve('w00t'), 250);
+        });
+
+      promisePoller({
+        taskFn,
+        masterTimeout: 500,
+        retries: 10,
+        shouldContinue() {
+          return true;
+        }
+      }).then(
+        () => {
+          fail('Master promise was resolved, should have hit master timeout');
+          done();
+        },
+        () => {
+          expect(numPolls).not.toBeGreaterThan(2);
+          done();
+        }
+      );
+    });
+  });
 });
